@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<contextName>Example</contextName>
+
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+		<resetJUL>true</resetJUL>
+	</contextListener>
+
+	<jmxConfigurator />
+
+	<insertFromJNDI env-entry-name="java:comp/env/spring.profiles.active" as="profile" />
+
+	<include resource="logback-${profile}.xml" />
+
+</configuration>

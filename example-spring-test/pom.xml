@@ -1,0 +1,146 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>example-spring</artifactId>
+		<groupId>example</groupId>
+		<version>1.0-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+
+	<artifactId>example-spring-test</artifactId>
+	<name>${project.artifactId}</name>
+	<packaging>jar</packaging>
+
+	<profiles>
+		<profile>
+			<id>acceptance-tests</id>
+
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<filtering>true</filtering>
+						<includes>
+							<include>**/*.properties</include>
+						</includes>
+					</resource>
+					<resource>
+						<directory>src/main/resources</directory>
+						<filtering>false</filtering>
+						<excludes>
+							<exclude>**/*.properties</exclude>
+						</excludes>
+					</resource>
+				</resources>
+
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<testSourceDirectory>${basedir}/src/main/java/</testSourceDirectory>
+							<testClassesDirectory>${project.build.directory}/classes/</testClassesDirectory>
+							<includes>
+								<include>**/*Story.java</include>
+							</includes>
+						</configuration>
+					</plugin>
+
+					<plugin>
+						<groupId>org.jbehave</groupId>
+						<artifactId>jbehave-maven-plugin</artifactId>
+						<version>${jbehave.version}</version>
+						<executions>
+							<execution>
+								<id>unpack-view-resources</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>unpack-view-resources</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.eclipse.m2e</groupId>
+							<artifactId>lifecycle-mapping</artifactId>
+							<version>1.0.0</version>
+							<configuration>
+								<lifecycleMappingMetadata>
+									<pluginExecutions>
+										<pluginExecution>
+											<pluginExecutionFilter>
+												<groupId>org.jbehave</groupId>
+												<artifactId>jbehave-maven-plugin</artifactId>
+												<versionRange>[3.7,)</versionRange>
+												<goals>
+													<goal>unpack-view-resources</goal>
+												</goals>
+											</pluginExecutionFilter>
+											<action>
+												<ignore></ignore>
+											</action>
+										</pluginExecution>
+									</pluginExecutions>
+								</lifecycleMappingMetadata>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>example-spring-core</artifactId>
+			<version>${project.version}</version>
+			<classifier>${example.webClassifier}</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>${h2.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jbehave</groupId>
+			<artifactId>jbehave-core</artifactId>
+			<version>${jbehave.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jbehave</groupId>
+			<artifactId>jbehave-spring</artifactId>
+			<version>${jbehave.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jbehave.site</groupId>
+			<artifactId>jbehave-site-resources</artifactId>
+			<version>3.1.1</version>
+			<type>zip</type>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jbehave</groupId>
+			<artifactId>jbehave-core</artifactId>
+			<version>${jbehave.version}</version>
+			<classifier>resources</classifier>
+			<type>zip</type>
+		</dependency>
+	</dependencies>
+</project>

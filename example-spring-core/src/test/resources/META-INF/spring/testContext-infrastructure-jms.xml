@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:amq="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:property-placeholder location="classpath:/test-jms.properties" />
+
+	<import resource="classpath:/META-INF/spring/applicationContext-infrastructure-common.xml" />
+	<import resource="classpath:/META-INF/spring/applicationContext-infrastructure-jms.xml" />
+
+	<!-- JMS message converter requires JSON serialization -->
+	<import resource="classpath:/META-INF/spring/applicationContext-infrastructure-jackson.xml" />
+
+	<!-- queue -->
+	<amq:queue id="testQueue" physicalName="example.testQueue" />
+	<amq:queue id="testDlqQueue" physicalName="DLQ.example.testQueue" />
+
+	<bean id="testQueueJmsTemplate" parent="abstractJmsTemplate">
+		<property name="defaultDestination" ref="testQueue" />
+	</bean>
+
+	<bean id="testDlqQueueJmsTemplate" parent="abstractJmsTemplate">
+		<property name="defaultDestination" ref="testDlqQueue" />
+	</bean>
+
+	<bean id="testQueueJmsListenerContainer" parent="abstractJmsListenerContainer">
+		<property name="destination" ref="testQueue" />
+		<property name="messageListener">
+			<bean parent="abstractMessageListenerAdapter">
+				<property name="delegate" ref="testQueueListener" />
+			</bean>
+		</property>
+	</bean>
+
+	<!-- topic -->
+	<amq:topic id="testTopic" physicalName="example.testTopic" />
+	<amq:queue id="testDlqTopic" physicalName="example.testDlqTopic" />
+
+	<bean id="testTopicJmsTemplate" parent="abstractJmsTemplate">
+		<property name="defaultDestination" ref="testTopic" />
+	</bean>
+
+	<bean id="testDlqTopicJmsTemplate" parent="abstractJmsTemplate">
+		<property name="defaultDestination" ref="testDlqTopic" />
+	</bean>
+
+	<bean id="testTopicJmsListenerContainer1" parent="abstractJmsListenerContainer">
+		<property name="destination" ref="testTopic" />
+		<property name="messageListener">
+			<bean parent="abstractMessageListenerAdapter">
+				<property name="delegate" ref="testTopicListener1" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="testTopicJmsListenerContainer2" parent="abstractJmsListenerContainer">
+		<property name="destination" ref="testTopic" />
+		<property name="messageListener">
+			<bean parent="abstractMessageListenerAdapter">
+				<property name="delegate" ref="testTopicListener2" />
+			</bean>
+		</property>
+	</bean>
+
+	<!-- performance -->
+	<amq:queue id="testPerformance" physicalName="example.testPerformance" />
+
+	<bean id="testPerformanceJmsTemplate" parent="abstractJmsTemplate">
+		<property name="defaultDestination" ref="testPerformance" />
+	</bean>
+
+	<bean id="testPerformanceQueueJmsListenerContainer" parent="abstractJmsListenerContainer">
+		<property name="destination" ref="testPerformance" />
+		<property name="concurrentConsumers" value="10" />
+		<property name="messageListener">
+			<bean parent="abstractMessageListenerAdapter">
+				<property name="delegate" ref="testPerformanceListener" />
+			</bean>
+		</property>
+	</bean>
+
+</beans>
